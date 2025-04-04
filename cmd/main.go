@@ -1,6 +1,7 @@
 package main
 
 import (
+	"dmitry-silinsky/go-fiber-hw/config"
 	"dmitry-silinsky/go-fiber-hw/internal/pages"
 
 	"github.com/gofiber/fiber/v2"
@@ -8,11 +9,15 @@ import (
 )
 
 func main() {
+	config.Load()
+
+	appConfig := config.NewAppConfig()
+
 	app := fiber.New()
 
 	app.Use(recover.New())
 
 	pages.NewHandler(app)
 
-	app.Listen(":3000")
+	app.Listen(appConfig.ListenAddr)
 }

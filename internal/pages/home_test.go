@@ -1,6 +1,8 @@
 package pages
 
 import (
+	"fmt"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -17,10 +19,21 @@ func TestHomeHandler(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
 	resp, err := app.Test(req)
 
-	assert.NoError(t, err)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.NoError(t, err, "Неожиданная ошибка выполнения запроса")
+	assert.Equal(
+		t,
+		http.StatusOK,
+		resp.StatusCode,
+		fmt.Sprintf("Ожидаемый статус запроса: %d, фактический: %d", http.StatusOK, resp.StatusCode),
+	)
 
-	body := make([]byte, resp.ContentLength)
-	resp.Body.Read(body)
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+
+	if err != nil {
+		t.Errorf("Ошибка чтения тела ответа: %v", err)
+	}
+
 	assert.Equal(t, "Start", string(body))
 }

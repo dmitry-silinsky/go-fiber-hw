@@ -3,13 +3,11 @@ package config
 import (
 	"log"
 	"os"
+	"strconv"
+	"strings"
 
 	"github.com/joho/godotenv"
 )
-
-type AppConfig struct {
-	ListenAddr string
-}
 
 func Load() {
 	if err := godotenv.Load(); err != nil {
@@ -21,13 +19,28 @@ func Load() {
 	log.Println(".env file has been loaded")
 }
 
-func NewAppConfig() *AppConfig {
-	val, exists := os.LookupEnv("LISTEN_ADDR")
-	if !exists {
-		val = "localhost:3000"
+func getString(env string, defaultVal string) string {
+	val := strings.Trim(os.Getenv(env), " ")
+
+	if val == "" {
+		return defaultVal
 	}
 
-	return &AppConfig{
-		ListenAddr: val,
+	return val
+}
+
+func getInt(env string, defaultVal int) int {
+	val := strings.Trim(os.Getenv(env), " ")
+
+	if val == "" {
+		return defaultVal
 	}
+
+	i, err := strconv.Atoi(val)
+
+	if err != nil {
+		return defaultVal
+	}
+
+	return i
 }

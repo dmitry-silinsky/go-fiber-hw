@@ -8,6 +8,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/gofiber/template/html/v2"
 	slogfiber "github.com/samber/slog-fiber"
 )
 
@@ -22,7 +23,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	app := fiber.New()
+	engine := html.New("./views", ".html")
+
+	app := fiber.New(fiber.Config{
+		Views: engine,
+	})
 
 	// Подключаем логирование через slog
 	app.Use(slogfiber.New(logger))
